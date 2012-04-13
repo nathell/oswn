@@ -1,0 +1,14 @@
+#!/bin/bash
+# requires dosfstools, mtools, and nasm
+# parameters: $1 = kernel image, $2 = output floppy image
+
+DIR="`dirname $0`"
+BOOT="$DIR/bootloader/boot1"
+
+if [ ! -f $BOOT ]; then
+  nasm $BOOT.asm
+fi
+dd if=/dev/zero of=$2 bs=1024 count=1440
+mkdosfs $2
+mcopy -i $2 $1 ::loader.bin
+dd if=$BOOT of=$2 conv=notrunc
